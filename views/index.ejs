@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <title>HOOMAN</title>
+        <link rel="stylesheet" href="css/styles.css" />
+        <script src="js/flowbite.js"></script>
+    </head>
+    <body>
+        <% if(auth) { %>
+        <section class="bg-white py-8 lg:py-16 antialiased">
+            <div class="max-w-2xl mx-auto px-4">
+                <div class="py-4 rounded-md text-center">
+                    <p class="text-sm text-gray-800 text-left">
+                        You are now signed in as
+                        <span class="font-semibold text-cyan-600"
+                            ><%= `${user.firstName} ${user.lastName}` %></span
+                        >
+                        <span class="text-gray-600">(@<%= user.username %>)</span>.
+                        <a
+                            href="/log-out"
+                            class="text-cyan-500 hover:underline cursor-pointer font-medium"
+                            >Click here</a
+                        >
+                        to log out.
+                    </p>
+                </div>
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg lg:text-2xl font-bold text-gray-900">
+                        Messages (<%= messages.length %>)
+                    </h2>
+                </div>
+                <form class="mb-6" action="/newMessage" method="POST">
+                    <div
+                        class="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200"
+                    >
+                        <label for="message" class="sr-only">Your message</label>
+                        <textarea
+                            id="message"
+                            name="message"
+                            rows="6"
+                            class="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none"
+                            placeholder="Write a message..."
+                            required
+                        ></textarea>
+                    </div>
+                    <button
+                        type="submit"
+                        class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-cyan-700 rounded-lg focus:ring-4 focus:ring-cyan-200"
+                    >
+                        Post message
+                    </button>
+                </form>
+                <% if(!memberstatus){ %>
+                <article class="p-6 text-base bg-white rounded-lg">
+                    <footer class="flex justify-between items-center mb-2">
+                        <div class="flex items-center">
+                            <p
+                                class="inline-flex items-center mr-3 text-sm text-gray-900 font-semibold"
+                            >
+                                Admin
+                            </p>
+                            <p class="text-sm text-gray-600">Oct 28, 2024 20:09</p>
+                        </div>
+                    </footer>
+
+                    <form class="text-gray-500" action="/activatemembership" method="post">
+                        <p>
+                            <button type="submit" class="text-cyan-500 hover:underline">
+                                Click here
+                            </button>
+                            to activate your full membership status, allowing you to view authors
+                            and dates of messages.
+                        </p>
+                    </form>
+                </article>
+                <% } %> <% messages.forEach(message => { %>
+                <article class="p-6 text-base bg-white rounded-lg">
+                    <footer class="flex justify-between items-center mb-2">
+                        <div class="flex items-center">
+                            <p
+                                class="inline-flex items-center mr-3 text-sm text-gray-900 font-semibold <%= !memberstatus ? 'filter blur-sm' : '' %>"
+                            >
+                                <%= memberstatus ? message.username : 'anonymous' %>
+                            </p>
+                            <p
+                                class="text-sm text-gray-600 <%= !memberstatus ? 'filter blur-sm' : '' %>"
+                            >
+                                <%= memberstatus ? message.added : 'This is the date' %>
+                            </p>
+                        </div>
+                    </footer>
+                    <p class="text-gray-500"><%= message.message %></p>
+                </article>
+
+                <% }) %>
+            </div>
+        </section>
+        <% } else{ %>
+
+        <div class="flex flex-col lg:flex-row h-screen">
+            <div
+                class="bg-cyan-800 text-white flex flex-col justify-center items-center w-full lg:w-1/2 p-12 text-center space-y-6"
+            >
+                <h1 class="box">HooMan</h1>
+                <h2 class="text-3xl font-bold">Explore the secret world of human confessions.</h2>
+                <p class="text-lg max-w-md">
+                    Curious to know what's behind the curtain? Become a member and discover the
+                    secrets within.
+                </p>
+                <div class="flex items-center space-x-2">
+                    <span class="text-lg">Made with love by</span>
+                    <a href="https://github.com/nabelk" title="Check my github profile"
+                        ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            x="0px"
+                            y="0px"
+                            width="30"
+                            height="30"
+                            viewBox="0 0 64 64"
+                            style="fill: white"
+                        >
+                            <path
+                                d="M32 6C17.641 6 6 17.641 6 32c0 12.277 8.512 22.56 19.955 25.286-.592-.141-1.179-.299-1.755-.479V50.85c0 0-.975.325-2.275.325-3.637 0-5.148-3.245-5.525-4.875-.229-.993-.827-1.934-1.469-2.509-.767-.684-1.126-.686-1.131-.92-.01-.491.658-.471.975-.471 1.625 0 2.857 1.729 3.429 2.623 1.417 2.207 2.938 2.577 3.721 2.577.975 0 1.817-.146 2.397-.426.268-1.888 1.108-3.57 2.478-4.774-6.097-1.219-10.4-4.716-10.4-10.4 0-2.928 1.175-5.619 3.133-7.792C19.333 23.641 19 22.494 19 20.625c0-1.235.086-2.751.65-4.225 0 0 3.708.026 7.205 3.338C28.469 19.268 30.196 19 32 19s3.531.268 5.145.738c3.497-3.312 7.205-3.338 7.205-3.338.567 1.474.65 2.99.65 4.225 0 2.015-.268 3.19-.432 3.697C46.466 26.475 47.6 29.124 47.6 32c0 5.684-4.303 9.181-10.4 10.4 1.628 1.43 2.6 3.513 2.6 5.85v8.557c-.576.181-1.162.338-1.755.479C49.488 54.56 58 44.277 58 32 58 17.641 46.359 6 32 6zM33.813 57.93C33.214 57.972 32.61 58 32 58 32.61 58 33.213 57.971 33.813 57.93zM37.786 57.346c-1.164.265-2.357.451-3.575.554C35.429 57.797 36.622 57.61 37.786 57.346zM32 58c-.61 0-1.214-.028-1.813-.07C30.787 57.971 31.39 58 32 58zM29.788 57.9c-1.217-.103-2.411-.289-3.574-.554C27.378 57.61 28.571 57.797 29.788 57.9z"
+                            ></path></svg
+                    ></a>
+                </div>
+            </div>
+
+            <div
+                class="bg-white flex flex-col justify-center items-center w-full lg:w-1/2 p-8 space-y-8"
+            >
+                <h1 class="text-2xl font-bold">Ready? Be a member now!</h1>
+
+                <!-- Signup Form -->
+                <form class="w-full max-w-md space-y-4" action="/sign-up" method="POST">
+                    <div>
+                        <label for="firstName" class="block text-sm font-medium text-gray-700"
+                            >First Name</label
+                        >
+                        <input
+                            name="firstName"
+                            value="<%= formData.firstName || '' %>"
+                            type="text"
+                            id="firstName"
+                            placeholder="e.g. John"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500"
+                        />
+                        <%- include('partials/errormessage', { errorMessages, field: 'firstName',
+                        polishField: 'First name' }) %>
+                    </div>
+
+                    <div>
+                        <label for="lastName" class="block text-sm font-medium text-gray-700"
+                            >Last Name</label
+                        >
+                        <input
+                            name="lastName"
+                            value="<%= formData.lastName || '' %>"
+                            type="text"
+                            id="lastName"
+                            placeholder="e.g. Doe"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500"
+                        />
+                        <%- include('partials/errormessage', { errorMessages, field: 'lastName',
+                        polishField: 'Last name' }) %>
+                    </div>
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700"
+                            >Username</label
+                        >
+                        <input
+                            name="username"
+                            value="<%= formData.username || '' %>"
+                            type="text"
+                            id="username"
+                            placeholder="e.g. johndoe"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500"
+                        />
+                        <%- include('partials/errormessage', { errorMessages, field: 'username',
+                        polishField: 'Username' }) %>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700"
+                            >Password</label
+                        >
+                        <input
+                            name="password"
+                            type="password"
+                            id="password"
+                            placeholder="********"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500"
+                        />
+                        <%- include('partials/errormessage', { errorMessages, field: 'password',
+                        polishField: 'Password' }) %>
+                    </div>
+                    <div>
+                        <label for="confirmPassword" class="block text-sm font-medium text-gray-700"
+                            >Confirm Password</label
+                        >
+                        <input
+                            name="confirmPassword"
+                            type="password"
+                            id="confirmPassword"
+                            placeholder="********"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500"
+                        />
+                        <%- include('partials/errormessage', { errorMessages, field:
+                        'confirmPassword', polishField: '' }) %>
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-700"
+                    >
+                        Sign Up
+                    </button>
+                    <p class="text-center text-sm text-gray-600">
+                        Already have an account?
+                        <a
+                            data-modal-target="authentication-modal"
+                            data-modal-toggle="authentication-modal"
+                            class="text-cyan-500 openlogin cursor-pointer"
+                            >Login here</a
+                        >
+                    </p>
+                </form>
+            </div>
+
+            <!-- Login Modal -->
+            <div
+                id="authentication-modal"
+                tabindex="-1"
+                aria-hidden="true"
+                class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+            >
+                <div class="relative p-4 w-full max-w-md max-h-full">
+                    <!-- Modal content -->
+                    <div class="relative bg-white rounded-lg shadow">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-4 md:p-5 border-b rounded-t"
+                        >
+                            <h3 class="text-xl font-semibold text-gray-900">
+                                Sign in to our platform
+                            </h3>
+                            <button
+                                type="button"
+                                class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+                                data-modal-hide="authentication-modal"
+                            >
+                                <svg
+                                    class="w-3 h-3"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 14 14"
+                                >
+                                    <path
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                                    />
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-4 md:p-5">
+                            <form class="space-y-4" action="/login" method="POST">
+                                <div>
+                                    <label
+                                        for="username"
+                                        class="block mb-2 text-sm font-medium text-gray-900"
+                                        >Your username</label
+                                    >
+                                    <input
+                                        type="text"
+                                        name="username"
+                                        id="usernamelogin"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+                                        placeholder="johndoe"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        for="password"
+                                        class="block mb-2 text-sm font-medium text-gray-900"
+                                        >Your password</label
+                                    >
+                                    <input
+                                        type="password"
+                                        name="password"
+                                        id="passwordlogin"
+                                        placeholder="••••••••"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+                                        required
+                                    />
+                                </div>
+
+                                <% if (message) { %>
+                                <div
+                                    class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50"
+                                    role="alert"
+                                >
+                                    <%= message %>
+                                </div>
+
+                                <% } %>
+
+                                <button
+                                    type="submit"
+                                    class="w-full text-white bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                                >
+                                    Login to your account
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </body>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          const showloginModal = <%= showLoginModal %>;
+          if (showloginModal ){
+            setTimeout(()=>{
+              document.querySelector('.openlogin').click();
+            }, 500 )
+          }
+
+        });
+    </script>
+</html>
